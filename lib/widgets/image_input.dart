@@ -1,13 +1,13 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as syspaths;
 
 class ImageInput extends StatefulWidget {
-  const ImageInput({Key? key}) : super(key: key);
+  final Function onSelectImage;
+
+  const ImageInput(this.onSelectImage, {Key? key}) : super(key: key);
 
   @override
   State<ImageInput> createState() => _ImageInputState();
@@ -26,6 +26,13 @@ class _ImageInputState extends State<ImageInput> {
     setState(() {
       _storeImage = File(imageFile.path);
     });
+
+    //diretorio para armazenar imagem...
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    String fileName = path.basename(_storeImage!.path);
+    final savedImage = await _storeImage!.copy("${appDir.path}/$fileName");
+
+    widget.onSelectImage(savedImage);
   }
 
   @override
